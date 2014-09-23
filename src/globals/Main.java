@@ -72,7 +72,7 @@ public class Main extends PApplet {
 
 	public void Cam_Position() {
 		
-		PVector newPos = new PVector(camPosControl.arrayValue()[0], -1000, camPosControl.arrayValue()[1]);
+		PVector newPos = new PVector(camPosControl.arrayValue()[0], scene.getCameraAltitude(), camPosControl.arrayValue()[1]);
 		scene.setCameraPos(newPos);
 	}
 

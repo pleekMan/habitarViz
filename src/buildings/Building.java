@@ -59,6 +59,10 @@ public class Building {
 		p5.println("New Building at: " + position);
 
 	}
+	
+	public PVector getPosition(){
+		return position;
+	}
 
 	public Contour getBuildingContour() {
 		PVector[] c = new PVector[] { new PVector(-30, 30), new PVector(30, 30), new PVector(50, 10), new PVector(10, -30), new PVector(-10, -30), new PVector(-50, 10) };
