@@ -6,6 +6,7 @@ import java.util.Iterator;
 import processing.core.PImage;
 import processing.core.PVector;
 import buildings.Building;
+import buildings.BuildingManager;
 
 public class SceneManager {
 	Main p5;
@@ -13,18 +14,21 @@ public class SceneManager {
 	PVector masterTranslate;
 
 	PImage mapBack;
-
-	ArrayList<Building> buildings;
+	
+	BuildingManager buildingManager;
+	
 	ArrayList<Camera> cameras;
 	Camera camera;
 	float cameraAltitude;
 
-	float growingAreaRadius;
 
 	public SceneManager() {
 		p5 = getP5();
 
 		p5.sphereDetail(4, 2);
+		
+		masterTranslate = new PVector(0,0,0);
+		mapBack = p5.loadImage("BuenosAires_alpha.png");
 
 		createCameras();
 		camera = getCamera("MAIN");
@@ -33,22 +37,11 @@ public class SceneManager {
 		p5.println(camera.getCamPosition());
 		p5.println(camera.getCamTarget());
 		camera.moveTo(new PVector(1000, cameraAltitude, 1000), 5f);
+		
+		buildingManager = new BuildingManager();
+		buildingManager.setGrowingAreaRadius(750);
 
-		masterTranslate = new PVector();
-		mapBack = p5.loadImage("BuenosAires_alpha.png");
 
-		buildings = new ArrayList<Building>();
-
-		Building building0 = new Building();
-		building0.setPosition(masterTranslate);
-		buildings.add(building0);
-		/*
-		 * for (int i = 0; i < 5; i++) { Building building = new Building(this);
-		 * building.setPosition(new PVector(random(width), random(height),
-		 * random(-300))); buildings.add(building); }
-		 */
-
-		growingAreaRadius = 750;
 	}
 
 	public void update() {
@@ -66,44 +59,11 @@ public class SceneManager {
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		// rotateX(map(mouseY,0,height,0,TWO_PI));
 		
-		// USING AN ITERATOR TO GO THROUGH THE BUILDINGS.
-		// IT'S REMOVE() METHOD AVOIDS CONCURRENT MODIFICATION AN ARRAYLIST SIZE
-		Iterator<Building> buildingIterator = buildings.iterator();
-		
-		while(buildingIterator.hasNext()){
-			Building actualBuilding = buildingIterator.next();
-			
-			actualBuilding.setScale(p5.norm(p5.mouseY, 0, p5.height));
-			actualBuilding.render();
-			
-			if(checkBuildingOffScreen(actualBuilding)){
-				buildingIterator.remove();
-				//buildings.remove(actualBuilding);
-			}
-		}
+		buildingManager.render();
 		
 	}
 
-	private boolean checkBuildingOffScreen(Building building) {
-		
-		float screenX = p5.screenX(building.getPosition().x, building.getPosition().y, building.getPosition().z);
-		float screenY = p5.screenY(building.getPosition().x, building.getPosition().y, building.getPosition().z);
-		p5.println("ScreenX: " + screenX + " / ScreenY: " + screenY);
-		
-		p5.pushMatrix();
-		p5.translate(building.getPosition().x + 50, building.getPosition().y, building.getPosition().z);
-		p5.rotateY(p5.QUARTER_PI * 0.5f);
-		p5.textSize(20);
-		p5.text(screenX + " | " + screenY, 0, 0);
-		p5.popMatrix();
-		
-		if(screenX < 0 || screenX > p5.width || screenY < 0 || screenY > p5.height){
-			return true;
-		} else {
-			return false;
-		}
-		
-	}
+
 
 	private void drawCameras() {
 		for (Camera cam : cameras) {
@@ -119,7 +79,7 @@ public class SceneManager {
 
 		p5.translate(camera.getCamTarget().x, -2, camera.getCamTarget().z);
 		p5.rotateX(p5.HALF_PI);
-		p5.rect(0, 0, growingAreaRadius * 2, growingAreaRadius * 2);
+		p5.rect(0, 0, buildingManager.getGrowingAreaRadius() * 2, buildingManager.getGrowingAreaRadius() * 2);
 
 		p5.popStyle();
 		p5.popMatrix();
@@ -201,23 +161,7 @@ public class SceneManager {
 
 	public void growBuildings() {
 
-		int count = (int) p5.random(10, 20);
-		float offset = 500f;
-
-		for (int i = 0; i < count; i++) {
-
-			float minX = camera.getCamTarget().x - growingAreaRadius;
-			float maxX = camera.getCamTarget().x + growingAreaRadius;
-			float minZ = camera.getCamTarget().z - growingAreaRadius;
-			float maxZ = camera.getCamTarget().z + growingAreaRadius;
-
-			float newX = p5.random(minX, maxX);
-			float newZ = p5.random(minZ, maxZ);
-
-			Building building = new Building();
-			building.setPosition(new PVector(newX, 0, newZ));
-			buildings.add(building);
-		}
+		buildingManager.triggerGrowBuildings(camera);
 
 	}
 

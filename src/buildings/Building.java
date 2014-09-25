@@ -1,5 +1,6 @@
 package buildings;
 
+import de.looksgood.ani.Ani;
 import processing.core.PVector;
 import globals.Main;
 import globals.PAppletSingleton;
@@ -9,20 +10,24 @@ import shapes3d.*;
 
 public class Building {
 
+	Main p5;
+
 	Path extrusionPath;
 	Contour contour;
 	ContourScale contourScale;
 	Extrusion extrusion;
 
-	Main p5;
-
+	float buildingHeight;
 	float scaling;
 	PVector position;
+
+	// Ani scaleAnimation;
 
 	public Building() {
 		p5 = getP5();
 
-		extrusionPath = new P_LinearPath(new PVector(0, -200, 0), new PVector(0, 0, 0));
+		buildingHeight = p5.random(-1000, -10);
+		extrusionPath = new P_LinearPath(new PVector(0, buildingHeight, 0), new PVector(0, 0, 0));
 		contour = getBuildingContour();
 		contourScale = new CS_ConstantScale();
 		// Create the texture coordinates for the end
@@ -36,9 +41,11 @@ public class Building {
 		// extrusion.setTexture("sky.jpg", S3D.S_CAP);
 		extrusion.drawMode(S3D.TEXTURE, S3D.BOTH_CAP);
 
-		scaling = 1.0f;
+		scaling = 0.0f;
 		position = new PVector();
 		
+		triggerGrow();
+
 	}
 
 	public void render() {
@@ -50,6 +57,14 @@ public class Building {
 		p5.popMatrix();
 	}
 
+	public void triggerGrow() {
+		float duration = p5.random(5,20);
+		float delay = p5.random(10);
+		// Ani.to(theTarget, theDuration, theDelay, theFieldName, theEnd,
+		// theEasing)
+		Ani.to(this, duration, delay, "scaling", 1f, Ani.CUBIC_IN_OUT);
+	}
+
 	public void setScale(float _scale) {
 		scaling = _scale;
 	}
@@ -59,9 +74,13 @@ public class Building {
 		p5.println("New Building at: " + position);
 
 	}
-	
-	public PVector getPosition(){
+
+	public PVector getPosition() {
 		return position;
+	}
+	
+	public float getHeight(){
+		return buildingHeight;
 	}
 
 	public Contour getBuildingContour() {

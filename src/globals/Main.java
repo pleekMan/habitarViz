@@ -7,6 +7,7 @@ import buildings.Building;
 import processing.core.*;
 import processing.opengl.*;
 import controlP5.*;
+import de.looksgood.ani.Ani;
 
 public class Main extends PApplet {
 
@@ -15,16 +16,21 @@ public class Main extends PApplet {
 	ControlP5 controllers;
 	Slider2D camPosControl;
 
+	Ani ani; 
 	public void setup() {
 
 		size(1000, 1000, P3D);
 		setPAppletSingleton();
+		
+		Ani.init(this);
+		setAniSingleton();
 
 		scene = new SceneManager();
 
 		controllers = new ControlP5(this);
 		createControllers();
-
+		
+		
 	}
 
 	public static void main(String args[]) {
@@ -35,6 +41,10 @@ public class Main extends PApplet {
 
 	private void setPAppletSingleton() {
 		PAppletSingleton.getInstance().setP5Applet(this);
+	}
+	
+	private void setAniSingleton(){
+		AniSingleton.getInstance().setAni(ani);
 	}
 
 	public void draw() {
