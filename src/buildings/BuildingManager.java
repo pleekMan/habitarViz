@@ -102,13 +102,15 @@ public class BuildingManager {
 		float screenY = p5.screenY(building.getPosition().x, building.getPosition().y, building.getPosition().z);
 		//p5.println("ScreenX: " + screenX + " / ScreenY: " + screenY);
 		
+		/* DRAW COORDINATES
 		p5.pushMatrix();
 		p5.translate(building.getPosition().x + 50, building.getPosition().y, building.getPosition().z + 50);
 		p5.rotateY(p5.QUARTER_PI * 0.5f);
-		p5.textSize(20);p5.fill(255,0,0);
+		p5.textSize(20);
+		p5.fill(255,0,0);
 		p5.text((int)screenX + " | " + (int)screenY + " | " + (int)building.getHeight(), 0, 0);
 		p5.popMatrix();
-		
+		*/
 		if(screenX < 0 || screenX > p5.width || screenY < 0 || screenY > p5.height){
 			return true;
 		} else {

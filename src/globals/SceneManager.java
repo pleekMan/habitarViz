@@ -1,5 +1,7 @@
 package globals;
 
+import interactionViz.UserLine;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -21,6 +23,7 @@ public class SceneManager {
 	Camera camera;
 	float cameraAltitude;
 
+	UserLine line01;
 
 	public SceneManager() {
 		p5 = getP5();
@@ -28,18 +31,21 @@ public class SceneManager {
 		p5.sphereDetail(4, 2);
 		
 		masterTranslate = new PVector(0,0,0);
-		mapBack = p5.loadImage("BuenosAires_alpha.png");
+		mapBack = p5.loadImage("BuenosAires_alpha_Black.png");
 
 		createCameras();
 		camera = getCamera("MAIN");
-		p5.ortho();
+		//p5.ortho();
 
 		p5.println(camera.getCamPosition());
 		p5.println(camera.getCamTarget());
 		camera.moveTo(new PVector(1000, cameraAltitude, 1000), 5f);
 		
 		buildingManager = new BuildingManager();
-		buildingManager.setGrowingAreaRadius(750);
+		buildingManager.setGrowingAreaRadius(400);
+		
+		line01 = new UserLine();
+		line01.initialize(new PVector(0, 0,0), new PVector(500, 0, 500));
 
 
 	}
@@ -47,20 +53,21 @@ public class SceneManager {
 	public void update() {
 		camera.update();
 		p5.camera(camera.getCamPosition().x, camera.getCamPosition().y, camera.getCamPosition().z, camera.getCamTarget().x, camera.getCamTarget().y, camera.getCamTarget().z, 0, 1, 0);
-		p5.lights();
+		//p5.lights();
 	}
 
 	public void render(){
 		
 		drawCityMap();
-		drawAxisGizmo();
+		//drawAxisGizmo();
 		drawCameras();
 		
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		// rotateX(map(mouseY,0,height,0,TWO_PI));
 		
 		buildingManager.render();
-		
+	
+		line01.render();
 	}
 
 
@@ -100,8 +107,8 @@ public class SceneManager {
 		cameras.add(cam01);
 
 		// CAM MAIN
-		PVector cam02Pos = new PVector(500, cameraAltitude, 500);
-		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, 0));
+		PVector cam02Pos = new PVector(0, cameraAltitude, 500);
+		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, 300)); // ESTO SIGNIFICA Q EL TARGET ESTA (100,0,100) ADELANTE
 		Camera cam02 = new Camera(cam02Pos, mainCamOffset);
 		cam02.setName("MAIN");
 		cameras.add(cam02);
@@ -189,7 +196,7 @@ public class SceneManager {
 		return mapBack;
 	}
 
-	void onKeyPressed(char key) {
+	public void onKeyPressed(char key) {
 
 		if (key == '1') {
 			switchToLeftCamera();
@@ -208,6 +215,22 @@ public class SceneManager {
 		if (key == 'b') {
 			growBuildings();
 		}
+	}
+	
+	public void onMousePressed(){
+		
+		// TRIGGER USER LINE
+		if (p5.mouseX > 900) {
+			PVector firstPoint = new PVector(camera.getCamTarget().x + 600,0,camera.getCamTarget().z);
+			PVector lastPoint = camera.getCamTarget().get();
+			line01.initialize(firstPoint, lastPoint);
+			//p5.println(p5.mouseX);
+		} else if (p5.mouseX < 100){
+			PVector firstPoint = new PVector(camera.getCamTarget().x - 600,0,camera.getCamTarget().z);
+			PVector lastPoint = new PVector(camera.getCamTarget().x,camera.getCamPosition().y,camera.getCamTarget().z);
+			line01.initialize(firstPoint, lastPoint);
+		}
+		
 	}
 
 	// P5 SINGLETON

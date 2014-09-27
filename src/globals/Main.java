@@ -30,6 +30,9 @@ public class Main extends PApplet {
 		controllers = new ControlP5(this);
 		createControllers();
 		
+		textSize(50);
+
+		
 		
 	}
 
@@ -48,8 +51,9 @@ public class Main extends PApplet {
 	}
 
 	public void draw() {
-		background(143, 141, 126);
-
+		//background(143, 141, 126);
+		background(255);
+		
 		pushStyle();
 		pushMatrix();
 
@@ -114,6 +118,8 @@ public class Main extends PApplet {
 	}
 
 	public void mousePressed() {
+		
+		scene.onMousePressed();
 	}
 
 	public void mouseReleased() {
