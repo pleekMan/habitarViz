@@ -71,6 +71,10 @@ public class UserLine {
 
 		}
 	}
+	
+	public PVector[] getPoints(){
+		return nodes;
+	}
 
 	// P5 SINGLETON
 	protected Main getP5() {

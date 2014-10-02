@@ -1,5 +1,7 @@
 package buildings;
 
+import interactionViz.UserLine;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -16,6 +18,8 @@ public class BuildingManager {
 	
 	int buildingGrowCount;
 	float growingAreaRadius;
+	
+	float maxDistanceFromPoint;
 
 	public BuildingManager() {
 		p5 = getP5();
@@ -36,8 +40,8 @@ public class BuildingManager {
 		 */
 		
 		buildingGrowCount = 100;
-		growingAreaRadius = 100;
-
+		growingAreaRadius = 0;
+		maxDistanceFromPoint = 100;
 
 	}
 
@@ -49,7 +53,7 @@ public class BuildingManager {
 
 		// USING AN ITERATOR TO GO THROUGH THE BUILDINGS.
 		// IT'S REMOVE() METHOD AVOIDS CONCURRENT MODIFICATION ON ARRAYLIST SIZE
-		// IF A ERASE A BUILDINNG ON THE FLY, IT WILL NOT THROW A NULL POINTER
+		// IF I ERASE A BUILDING ON THE FLY, IT WILL NOT THROW A NULL POINTER
 		// EXCEPTION
 		Iterator<Building> buildingIterator = buildings.iterator();
 
@@ -89,11 +93,36 @@ public class BuildingManager {
 
 	}
 	
+	public void shrinkBuildings(UserLine userLine){
+		
+		for (Building building : buildings) {
+			
+			if (buildingReachedByLine(building, userLine)) {
+				building.setShrinking(true);
+			}
+			
+		}
+	}
+	
 	public void setGrowingAreaRadius(float radius){
 		growingAreaRadius = radius;
 	}
 	public float getGrowingAreaRadius(){
 		return growingAreaRadius;
+	}
+	
+	private boolean buildingReachedByLine(Building building, UserLine userLine){
+		
+		boolean reached = false;
+		
+		for (int i = 0; i < userLine.getPoints().length; i++) {
+			float distFromPoint = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, userLine.getPoints()[i].x, userLine.getPoints()[i].y, userLine.getPoints()[i].z);
+			if (distFromPoint < maxDistanceFromPoint) {
+				reached = true;
+				break;
+			}
+		}
+		return reached;
 	}
 	
 	private boolean checkBuildingOffScreen(Building building) {

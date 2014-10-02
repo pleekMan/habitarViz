@@ -19,6 +19,8 @@ public class Building {
 
 	float buildingHeight;
 	float scaling;
+	boolean isShrinking;
+	float shrinkVel;
 	PVector position;
 	int fillColor;
 
@@ -27,7 +29,7 @@ public class Building {
 	public Building() {
 		p5 = getP5();
 
-		//fillColor = p5.color(p5.random(255), p5.random(255), p5.random(255));
+		// fillColor = p5.color(p5.random(255), p5.random(255), p5.random(255));
 		fillColor = p5.color(255);
 
 		buildingHeight = p5.random(-1000, 0);
@@ -40,7 +42,7 @@ public class Building {
 		contour.make_u_Coordinates();
 		// Create the extrusion
 		extrusion = new Extrusion(p5, extrusionPath, 1, contour, contourScale);
-		extrusion.drawMode(S3D.SOLID | S3D.WIRE);
+		 extrusion.drawMode(S3D.SOLID | S3D.WIRE);
 		//extrusion.drawMode(S3D.WIRE);
 		extrusion.fill(fillColor);
 		extrusion.drawMode(S3D.SOLID, S3D.BOTH_CAP);
@@ -53,6 +55,8 @@ public class Building {
 		// extrusion.drawMode(S3D.TEXTURE, S3D.BOTH_CAP);
 
 		scaling = 0.0f;
+		isShrinking = false;
+		shrinkVel = p5.norm(buildingHeight * 0.005f, 0, buildingHeight) * -1;
 		position = new PVector();
 
 		triggerGrow();
@@ -62,10 +66,18 @@ public class Building {
 	public void render() {
 		// extrusion.scale(map(mouseX, 0, width, 0, 1));
 		if (scaling > 0.01) {
+			
 			p5.pushMatrix();
 			p5.translate(position.x, position.y, position.z);
+
+			if (isShrinking) {
+				//if (scaling > 0.1) {
+					scaling += shrinkVel;
+				//}
+			}
+
 			p5.scale(1, scaling, 1);
-			p5.fill(fillColor);
+			//p5.fill(fillColor);
 			extrusion.draw();
 			p5.popMatrix();
 		}
@@ -80,7 +92,21 @@ public class Building {
 	}
 
 	public void setScale(float _scale) {
+		// NOT USED
 		scaling = _scale;
+	}
+
+	public void setShrinking(boolean value) {
+		if (isShrinking == false) {
+			fillColor = p5.color(p5.random(255), p5.random(255), p5.random(255));
+			extrusion.fill(fillColor);
+		}
+		isShrinking = value;
+		 
+	}
+
+	public boolean isShrinking() {
+		return isShrinking;
 	}
 
 	public void setPosition(PVector pos) {
@@ -113,4 +139,5 @@ public class Building {
 	protected Main getP5() {
 		return PAppletSingleton.getInstance().getP5Applet();
 	}
+
 }

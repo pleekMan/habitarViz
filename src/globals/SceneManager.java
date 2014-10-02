@@ -15,7 +15,8 @@ public class SceneManager {
 
 	PVector masterTranslate;
 
-	PImage mapBack;
+	//PImage mapBack;
+	CityMap cityMap;
 	
 	BuildingManager buildingManager;
 	
@@ -31,8 +32,9 @@ public class SceneManager {
 		p5.sphereDetail(4, 2);
 		
 		masterTranslate = new PVector(0,0,0);
-		mapBack = p5.loadImage("BuenosAires_alpha_Black.png");
-
+		
+		cityMap = new CityMap();
+		
 		createCameras();
 		camera = getCamera("MAIN");
 		//p5.ortho();
@@ -54,6 +56,7 @@ public class SceneManager {
 		camera.update();
 		p5.camera(camera.getCamPosition().x, camera.getCamPosition().y, camera.getCamPosition().z, camera.getCamTarget().x, camera.getCamTarget().y, camera.getCamTarget().z, 0, 1, 0);
 		//p5.lights();
+		cityMap.updated(camera.getCamTarget());
 	}
 
 	public void render(){
@@ -65,9 +68,10 @@ public class SceneManager {
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		// rotateX(map(mouseY,0,height,0,TWO_PI));
 		
+		buildingManager.shrinkBuildings(line01);
 		buildingManager.render();
 	
-		line01.render();
+		//line01.render();
 	}
 
 
@@ -159,8 +163,9 @@ public class SceneManager {
 
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		p5.rotateX(p5.HALF_PI);
-		p5.image(mapBack, 0, 0);
-
+		//p5.image(mapBack, 0, 0);
+		cityMap.render();
+		
 		p5.popMatrix();
 
 		p5.popStyle();
@@ -193,7 +198,7 @@ public class SceneManager {
 	}
 
 	public PImage getMap() {
-		return mapBack;
+		return cityMap.getMap();
 	}
 
 	public void onKeyPressed(char key) {
@@ -211,9 +216,17 @@ public class SceneManager {
 		if (key == 'c') {
 			camera.moveTo(new PVector(5000, cameraAltitude, 5000), 10f);
 		}
+		if (key == 'n') {
+			camera.moveTo(new PVector(0, cameraAltitude, 0), 10f);
+		}
+
 
 		if (key == 'b') {
 			growBuildings();
+		}
+		
+		if (key == 'i') {
+			cityMap.triggerMask();
 		}
 	}
 	
