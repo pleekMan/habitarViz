@@ -15,11 +15,12 @@ public class SceneManager {
 
 	PVector masterTranslate;
 
-	//PImage mapBack;
+	// PImage mapBack;
 	CityMap cityMap;
-	
+
+	ArrayList<Comuna> comunas;
 	BuildingManager buildingManager;
-	
+
 	ArrayList<Camera> cameras;
 	Camera camera;
 	float cameraAltitude;
@@ -30,51 +31,130 @@ public class SceneManager {
 		p5 = getP5();
 
 		p5.sphereDetail(4, 2);
-		
-		masterTranslate = new PVector(0,0,0);
-		
+
+		masterTranslate = new PVector(0, 0, 0);
+
+		comunas = new ArrayList<Comuna>();
+		createComunas("ViviendasComunas.csv");
+
 		cityMap = new CityMap();
-		
+
 		createCameras();
 		camera = getCamera("MAIN");
-		//p5.ortho();
+		// p5.ortho();
 
 		p5.println(camera.getCamPosition());
 		p5.println(camera.getCamTarget());
 		camera.moveTo(new PVector(1000, cameraAltitude, 1000), 5f);
-		
+
 		buildingManager = new BuildingManager();
 		buildingManager.setGrowingAreaRadius(400);
-		
+
 		line01 = new UserLine();
-		line01.initialize(new PVector(0, 0,0), new PVector(500, 0, 500));
+		line01.initialize(new PVector(0, 0, 0), new PVector(500, 0, 500));
 
+	}
 
+	// KINDA LIKE A STRUCT
+	public static class ComunasGlobalStats {
+
+		public static int totalViviendasMin = 100000;
+		public static int totalViviendasMax = 0;
+
+		public static int habitadasMin = 100000;
+		public static int habitadasMax = 0;
+
+		public static int deshabitadasMin = 100000;
+		public static int deshabitadasMax = 0;
+
+		public static int colectivasMin = 100000;
+		public static int colectivasMax = 0;
 	}
 
 	public void update() {
 		camera.update();
 		p5.camera(camera.getCamPosition().x, camera.getCamPosition().y, camera.getCamPosition().z, camera.getCamTarget().x, camera.getCamTarget().y, camera.getCamTarget().z, 0, 1, 0);
-		//p5.lights();
+		// p5.lights();
 		cityMap.updated(camera.getCamTarget());
 	}
 
-	public void render(){
-		
+	public void render() {
+
 		drawCityMap();
-		//drawAxisGizmo();
+		// drawAxisGizmo();
 		drawCameras();
-		
+
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		// rotateX(map(mouseY,0,height,0,TWO_PI));
-		
+
 		buildingManager.shrinkBuildings(line01);
 		buildingManager.render();
-	
-		//line01.render();
+
+		// line01.render();
 	}
 
+	private void createComunas(String dataPath) {
 
+		String[] lines = p5.loadStrings(dataPath);
+
+		for (int i = 0; i < lines.length; i++) {
+			// CREATE Comuna OBJECT
+			Comuna newComuna = new Comuna();
+
+			String[] comunaData = p5.split(lines[i], ',');
+
+			int id = Integer.valueOf(comunaData[0]);
+			int viviendasTotal = Integer.parseInt(comunaData[1]);
+			int habitadas = Integer.parseInt(comunaData[2]);
+			int deshabitadas = Integer.parseInt(comunaData[3]);
+			int colectivas = Integer.parseInt(comunaData[4]);
+
+			newComuna.setData(id, viviendasTotal, habitadas, deshabitadas, colectivas);
+
+			comunas.add(newComuna);
+
+		}
+
+		// FOR COMUNA STATISTICS - BEGIN --------------
+		
+		int[] allViviendasTotal = new int[lines.length];
+		int[] allHabitadas = new int[lines.length];
+		int[] allDeshabitadas = new int[lines.length];
+		int[] allColectivas = new int[lines.length];
+
+		for (int i = 0; i < allViviendasTotal.length; i++) {
+			allViviendasTotal[i] = comunas.get(i).getViviendasTotal();
+		}
+		for (int i = 0; i < allHabitadas.length; i++) {
+			allHabitadas[i] = comunas.get(i).getHabitadas();
+		}
+		for (int i = 0; i < allDeshabitadas.length; i++) {
+			allDeshabitadas[i] = comunas.get(i).getDeshabitadas();
+		}
+		for (int i = 0; i < allColectivas.length; i++) {
+			allColectivas[i] = comunas.get(i).getColectivas();
+		}
+		
+		ComunasGlobalStats.totalViviendasMin = p5.min(allViviendasTotal);
+		ComunasGlobalStats.totalViviendasMax = p5.max(allViviendasTotal);
+		ComunasGlobalStats.habitadasMin = p5.min(allHabitadas);
+		ComunasGlobalStats.habitadasMax = p5.max(allHabitadas);
+		ComunasGlobalStats.deshabitadasMin = p5.min(allDeshabitadas);
+		ComunasGlobalStats.deshabitadasMax = p5.max(allDeshabitadas);
+		ComunasGlobalStats.colectivasMin = p5.min(allColectivas);
+		ComunasGlobalStats.colectivasMax = p5.max(allColectivas);
+		
+		// FOR COMUNA STATISTICS - END --------------
+
+
+
+		// PRINT OUT
+		for (Comuna comuna : comunas) {
+			p5.println(comuna.getId() + " - " + comuna.getViviendasTotal() + " - " + comuna.getHabitadas() + " - " + comuna.getDeshabitadas() + " - " + comuna.getColectivas());
+		}
+		p5.print("-");
+
+	}
 
 	private void drawCameras() {
 		for (Camera cam : cameras) {
@@ -112,7 +192,14 @@ public class SceneManager {
 
 		// CAM MAIN
 		PVector cam02Pos = new PVector(0, cameraAltitude, 500);
-		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, 300)); // ESTO SIGNIFICA Q EL TARGET ESTA (100,0,100) ADELANTE
+		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, 300)); // ESTO
+																				// SIGNIFICA
+																				// Q
+																				// EL
+																				// TARGET
+																				// ESTA
+																				// (100,0,100)
+																				// ADELANTE
 		Camera cam02 = new Camera(cam02Pos, mainCamOffset);
 		cam02.setName("MAIN");
 		cameras.add(cam02);
@@ -163,9 +250,9 @@ public class SceneManager {
 
 		p5.translate(masterTranslate.x, masterTranslate.y, masterTranslate.z);
 		p5.rotateX(p5.HALF_PI);
-		//p5.image(mapBack, 0, 0);
+		// p5.image(mapBack, 0, 0);
 		cityMap.render();
-		
+
 		p5.popMatrix();
 
 		p5.popStyle();
@@ -220,30 +307,29 @@ public class SceneManager {
 			camera.moveTo(new PVector(0, cameraAltitude, 0), 10f);
 		}
 
-
 		if (key == 'b') {
 			growBuildings();
 		}
-		
+
 		if (key == 'i') {
 			cityMap.triggerMask();
 		}
 	}
-	
-	public void onMousePressed(){
-		
+
+	public void onMousePressed() {
+
 		// TRIGGER USER LINE
 		if (p5.mouseX > 900) {
-			PVector firstPoint = new PVector(camera.getCamTarget().x + 600,0,camera.getCamTarget().z);
+			PVector firstPoint = new PVector(camera.getCamTarget().x + 600, 0, camera.getCamTarget().z);
 			PVector lastPoint = camera.getCamTarget().get();
 			line01.initialize(firstPoint, lastPoint);
-			//p5.println(p5.mouseX);
-		} else if (p5.mouseX < 100){
-			PVector firstPoint = new PVector(camera.getCamTarget().x - 600,0,camera.getCamTarget().z);
-			PVector lastPoint = new PVector(camera.getCamTarget().x,camera.getCamPosition().y,camera.getCamTarget().z);
+			// p5.println(p5.mouseX);
+		} else if (p5.mouseX < 100) {
+			PVector firstPoint = new PVector(camera.getCamTarget().x - 600, 0, camera.getCamTarget().z);
+			PVector lastPoint = new PVector(camera.getCamTarget().x, camera.getCamPosition().y, camera.getCamTarget().z);
 			line01.initialize(firstPoint, lastPoint);
 		}
-		
+
 	}
 
 	// P5 SINGLETON

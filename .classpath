@@ -20,5 +20,10 @@
 	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/openGL/jogl-all.jar"/>
 	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/Ani.jar"/>
 	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/Shapes3d.jar"/>
+	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/arduino/library/Arduino.jar"/>
+	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/serial/library/serial.jar"/>
+	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/serial/library/RXTXcomm.jar"/>
+	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/supercollider.jar"/>
+	<classpathentry kind="lib" path="/Projects/Eclipse WorkSpace/libraries/oscP5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
