@@ -25,6 +25,9 @@ public class Comuna {
 		deshabitadas = _deshabitadas;
 		colectivas = _colectivas;
 	}
+	public void setImage(PImage _image){
+		comunaImage = _image;
+	}
 	
 	
 	public int getId() {

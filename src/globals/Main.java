@@ -1,21 +1,21 @@
 package globals;
 
-import java.io.File;
-import java.util.ArrayList;
+//import java.io.File;
+//import java.util.ArrayList;
 
-import buildings.Building;
+//import buildings.Building;
 import processing.core.*;
-import processing.opengl.*;
+//import processing.opengl.*;
 import controlP5.*;
 import de.looksgood.ani.Ani;
 
-import processing.serial.*;
+//import processing.serial.*;
 import cc.arduino.*;
 
-import supercollider.*;
-import supercollider.Group;
+//import supercollider.*;
+//import supercollider.Group;
 
-import oscP5.*;
+//import oscP5.*;
 
 public class Main extends PApplet {
 
@@ -26,18 +26,15 @@ public class Main extends PApplet {
 
 	Ani ani;
 
-	Arduino arduino;
-	int manopla01Pin = 0;
+	//Arduino arduino;
+	//int threshold = 300;
 
-	Group group;
-	Synth granulador;
-
-	int threshold = 50;
-	int a0 = 0;
+	//Group group; Synth granulador;
+	
 
 	public void setup() {
 
-		size(1000, 1000, P3D);
+		size(1024, 768, P3D);
 		setPAppletSingleton();
 
 		Ani.init(this);
@@ -47,18 +44,26 @@ public class Main extends PApplet {
 
 		controllers = new ControlP5(this);
 		createControllers();
+		controllers.hide();
 
 		textSize(50);
 
+		/*
 		println(Arduino.list());
 		arduino = new Arduino(this, Arduino.list()[4], 57600);
-		arduino.pinMode(manopla01Pin, Arduino.INPUT);
+		for (int i = 0; i < 6; i++) {
+			arduino.pinMode(i, Arduino.INPUT);
+		}
+		*/
+		
 
-		group = new Group();
-		group.create();
-
-		granulador = new Synth("buf_grain_test");
-		granulador.addToTail(group);
+		/*
+		 * 
+		 * group = new Group(); group.create();
+		 * 
+		 * granulador = new Synth("buf_grain_test");
+		 * granulador.addToTail(group);
+		 */
 
 	}
 
@@ -83,20 +88,37 @@ public class Main extends PApplet {
 
 	public void draw() {
 		// background(143, 141, 126);
-		background(255);
+		background(0);
 
-		fill(255,0,0);
-		rect(0, 0, arduino.analogRead(manopla01Pin * 10), 50);
+		/*
+		 * fill(255,0,0); rect(0, 0, arduino.analogRead(manopla01Pin * 10), 50);
+		 * 
+		 * if (arduino.analogRead(0) > threshold) { a0 = arduino.analogRead(0);
+		 * } else { a0 = 0; }
+		 * 
+		 * granulador.set("grainSize", map(a0, 0, 420, 0.1f, 100.0f));
+		 * granulador.set("amp", map(a0, 0, 1023, 1.f, 0f)); text(1 - map(a0, 0,
+		 * 420, 1.f, 0f), arduino.analogRead(manopla01Pin * 10), 60);
+		 */
 
+		//scene.setActiveAreas(getManijaStates());
+		
+		/*
 		if (arduino.analogRead(0) > threshold) {
-			a0 = arduino.analogRead(0);
-		} else {
-			a0 = 0;
+			fill(255,0,0,127);
+			ellipse(0, height * 0.5f, height * 0.5f, height * 0.5f);
+			text(arduino.analogRead(0), 10, 900);
 		}
+		if (arduino.analogRead(1) > threshold) {
+			fill(255,0,0,127);
+			ellipse(width, height * 0.5f, height * 0.5f, height * 0.5f);
 
-		granulador.set("grainSize", map(a0, 0, 420, 0.1f, 100.0f));
-		granulador.set("amp", map(a0, 0, 1023, 1.f, 0f));
-		text(1 - map(a0, 0, 420, 1.f, 0f), arduino.analogRead(manopla01Pin * 10), 60);
+		}
+		text(arduino.analogRead(1), 900, 900);
+
+		text(arduino.analogRead(0), 10, 900);
+		 */
+		
 
 		pushStyle();
 		pushMatrix();
@@ -110,6 +132,16 @@ public class Main extends PApplet {
 	}
 
 	// CONTROLLERS - BEGIN --------------------------
+	
+	/*
+	private boolean[] getManijaStates() {
+		boolean[] states = new boolean[6];
+		for (int i = 0; i < states.length; i++) {
+			states[i] = arduino.analogRead(i) > threshold ? true : false;
+		}
+		return states;
+	}
+	*/
 
 	private void createControllers() {
 

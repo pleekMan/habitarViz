@@ -33,7 +33,7 @@ public class Camera {
 		targetPosOffset = targetPos.get();
 		name = "No Name";
 
-		moveToPos = new PVector(0, 0, -100);
+		moveToPos = new PVector(0, 0, 0);
 		animationPos = 0;
 		// animation = new Ani(this, 2.0f, "animationPos", 1);
 		Ani.to(this, 2.0f, "camX", -100);
@@ -101,7 +101,14 @@ public class Camera {
 		p5.pushMatrix();
 		p5.translate(targetPos.x, targetPos.y, targetPos.z);
 		p5.sphere(20);
+		
+		//p5.rotateX(-p5.HALF_PI);
+		//p5.rotateZ(-p5.PI);
 		p5.popMatrix();
+		
+		//p5.fill(255);
+		//p5.translate(0, 0, -2);
+		//p5.text("X: " + targetPos.x + " - Z: " + targetPos.z, 0, 0);
 
 	}
 

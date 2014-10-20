@@ -81,6 +81,7 @@ public class CityMap {
 		
 		p5.image(cityImage, 0, 0);
 		
+		/*
 		p5.fill(255);
 		p5.stroke(0);
 		
@@ -107,6 +108,10 @@ public class CityMap {
 		
 		
 		p5.popMatrix();
+		
+		*/
+		
+		
 		//p5.pushMatrix();
 		
 		//p5.translate(0, 0, -10);
