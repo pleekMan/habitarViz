@@ -56,9 +56,9 @@ public class Camera {
 	}
 
 	public void moveTo(PVector target, float duration) {
-		Ani.to(this, duration, "camX", target.x);
-		Ani.to(this, duration, "camY", target.y);
-		Ani.to(this, duration, "camZ", target.z);
+		Ani.to(this, duration, "camX", target.x, Ani.CUBIC_IN_OUT);
+		Ani.to(this, duration, "camY", target.y, Ani.CUBIC_IN_OUT);
+		Ani.to(this, duration, "camZ", target.z, Ani.CUBIC_IN_OUT);
 	}
 
 	public void setName(String _name) {

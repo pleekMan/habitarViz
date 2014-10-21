@@ -12,7 +12,7 @@ public class ParticleManager {
 
 	Main p5;
 
-	ArrayList<Particle> particles;
+	public ArrayList<Particle> particles;
 	ArrayList<Attractor> attractors;
 
 	Attractor deathAttractor;
@@ -123,6 +123,7 @@ public class ParticleManager {
 			
 			
 			PVector spawnPoint = assignSpawnPoint();
+			spawnPoint.z = 0;
 			
 			Particle particle = new Particle(spawnPoint);
 

@@ -9,7 +9,7 @@ public class Particle {
 
 	Main p5;
 
-	PVector posicion;
+	public PVector posicion;
 	PVector velocidad;
 	PVector aceleracion;
 	float damp;
@@ -54,12 +54,13 @@ public class Particle {
 		// limite de aceleracion
 		velocidad.add(aceleracion);
 		velocidad.mult(damp);
+		velocidad.z = 0;
 
 		velocidad.limit(10);
 
 		// cambio de posicion
 		posicion.add(velocidad);
-		posicion.add(p5.random(-1, 1), p5.random(-1, 1), p5.random(0));
+		posicion.add(p5.random(-1, 1), p5.random(-1, 1),0f);
 	}
 
 	public void render() {
@@ -69,6 +70,12 @@ public class Particle {
 		p5.fill(255, 128, 0);
 		// noFill();
 		p5.ellipse(posicion.x, posicion.y, radio, radio);
+		
+		//p5.pushMatrix();
+		//p5.rotateX(-p5.HALF_PI);
+		p5.textSize(20);
+		p5.text(p5.nf(posicion.x, 2, 0) + " / " + p5.nf(posicion.y, 2, 0) + " / " + p5.nf(posicion.z, 2, 0), 1100, 20);
+		//p5.popMatrix();
 	}
 
 	public void assignAttractor(Attractor _attractor) {

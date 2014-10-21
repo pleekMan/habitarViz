@@ -16,7 +16,7 @@ public class BuildingManager {
 
 	Main p5;
 
-	ArrayList<Building> buildings;
+	public ArrayList<Building> buildings;
 
 	int buildingGrowCount;
 	float growingAreaRadius;
@@ -42,7 +42,7 @@ public class BuildingManager {
 		 * random(-300))); buildings.add(building); }
 		 */
 
-		buildingGrowCount = 50;
+		buildingGrowCount = 70;
 		//growingAreaRadius = 0;
 		maxDistanceFromPoint = 50;
 		enableRemoval = true;
@@ -168,7 +168,7 @@ public class BuildingManager {
 		boolean reached = false;
 
 		for (int i = 0; i < userLine.getPoints().length; i++) {
-			float distFromPoint = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, userLine.getPoints()[i].x, userLine.getPoints()[i].y, userLine.getPoints()[i].z);
+			float distFromPoint = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, userLine.getPoints()[i].x, -userLine.getPoints()[i].z, userLine.getPoints()[i].y);
 			if (distFromPoint < maxDistanceFromPoint) {
 				reached = true;
 				break;
@@ -179,7 +179,8 @@ public class BuildingManager {
 	
 	private boolean buildingReachedByParticle(Building building, Particle particle){
 		boolean reached = false;
-		float distFromParticle = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, particle.getPosition().x, particle.getPosition().z, particle.getPosition().y);
+		float distFromParticle = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, particle.getPosition().x, particle.getPosition().z, -particle.getPosition().y);
+		//p5.println(distFromParticle);
 		if (distFromParticle < maxDistanceFromPoint) {
 			reached = true;
 		}

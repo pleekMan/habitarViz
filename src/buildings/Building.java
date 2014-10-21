@@ -21,7 +21,7 @@ public class Building {
 	float scaling;
 	boolean isShrinking;
 	float shrinkVel;
-	PVector position;
+	public PVector position;
 	int fillColor;
 
 	// Ani scaleAnimation;
@@ -71,6 +71,12 @@ public class Building {
 			p5.pushMatrix();
 			p5.translate(position.x, position.y, position.z);
 
+			p5.pushMatrix();
+			p5.rotateX(-p5.HALF_PI);
+			p5.textSize(15);
+			p5.text(p5.nf(position.x, 2, 0) + " / " + p5.nf(position.y, 2, 0) + " / " + p5.nf(position.z, 2, 0), 20, 40);
+			p5.popMatrix();
+			
 			if (isShrinking) {
 				//if (scaling > 0.1) {
 					scaling += shrinkVel;

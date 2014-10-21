@@ -38,14 +38,14 @@ public class SceneManager {
 	ParticleManager particleManager;
 
 	ArduinoManager arduino;
-	
+
 	Timer comunaTimer;
 
 	public SceneManager() {
 		p5 = getP5();
 
 		p5.sphereDetail(4, 2);
-		
+
 		cameraAltitude = 600;
 
 		masterTranslate = new PVector(0, 0, 0);
@@ -65,8 +65,6 @@ public class SceneManager {
 		cameraPos1 = new PVector(1000, cameraAltitude, 0);
 		cameraMotionTime = 10;
 
-
-
 		p5.println(camera.getCamPosition());
 		p5.println(camera.getCamTarget());
 		camera.moveTo(new PVector(0, cameraAltitude, 0), 5f);
@@ -75,7 +73,7 @@ public class SceneManager {
 		buildingManager.setGrowingAreaRadius(300);
 
 		line01 = new UserLine();
-		line01.initialize(new PVector(1000,1000,1000), new PVector(1000,1000,1000));
+		line01.initialize(new PVector(1000, 1000, 1000), new PVector(1000, 1000, 1000));
 
 		/*
 		 * activeAreas = new boolean[6]; for (int i = 0; i < activeAreas.length;
@@ -86,9 +84,9 @@ public class SceneManager {
 		particleManager.setDeathAttractorCenter(camera.getCamPosition());
 
 		arduino = new ArduinoManager();
-		
+
 		comunaTimer = new Timer();
-		comunaTimer.setDuration((int)cameraMotionTime * 2);
+		comunaTimer.setDuration((int) cameraMotionTime * 4);
 		comunaTimer.start();
 	}
 
@@ -115,8 +113,7 @@ public class SceneManager {
 		cityMap.updated(camera.getCamTarget());
 
 		particleManager.update();
-		
-		
+
 		// HANDLING PARTICLE SPAWNING
 		if (arduino.manijasAreTouched() && !isCameraMoving()) {
 			particleManager.enableSpawn(true);
@@ -130,16 +127,18 @@ public class SceneManager {
 		 * for (int i = 0; i < activeAreas.length; i++) { if
 		 * (arduino.getManijaStates()[i]) { activeAreas[i] = true; } }
 		 */
-		//buildingManager.shrinkBuildings(line01);
-		//buildingManager.shrinkBuildings(particleManager);
+		// buildingManager.shrinkBuildings(line01);
+		buildingManager.shrinkBuildings(particleManager);
 
 		// COMUNA SWITCH TIMER
 		if (comunaTimer.isFinished()) {
 			switchComunas();
-			//comunaTimer.start();
+			// comunaTimer.start();
 		}
-		
-		// ENABLING BUILDING DELETION ACCORDING TO CAMERAPOS AND ACTIVE COMUNA (DON'T ERASE PREV BUILDINGS UNTIL YOU'VE ALMOST REACHED ACTIVE COMUNA)
+
+		// ENABLING BUILDING DELETION ACCORDING TO CAMERAPOS AND ACTIVE COMUNA
+		// (DON'T ERASE PREV BUILDINGS UNTIL YOU'VE ALMOST REACHED ACTIVE
+		// COMUNA)
 		if (isCameraMoving()) {
 			buildingManager.enableRemoval(false);
 		} else {
@@ -165,6 +164,14 @@ public class SceneManager {
 
 		particleManager.render();
 
+		if (buildingManager.buildings.size() > 0 && particleManager.particles.size() > 0) {
+			p5.stroke(255, 255, 0);
+			p5.line(buildingManager.buildings.get(0).position.x, buildingManager.buildings.get(0).position.y, buildingManager.buildings.get(0).position.z, particleManager.particles.get(0).posicion.x, particleManager.particles.get(0).posicion.z,
+					-particleManager.particles.get(0).posicion.y);
+
+			// p5.text(c, x, y);
+
+		}
 	}
 
 	private void createComunas(String dataPath) {
@@ -182,7 +189,7 @@ public class SceneManager {
 			int habitadas = Integer.parseInt(comunaData[2]);
 			int deshabitadas = Integer.parseInt(comunaData[3]);
 			int colectivas = Integer.parseInt(comunaData[4]);
-			PImage comunaImage = p5.loadImage("comunas/Comuna" + (i + 1) + ".jpg");
+			PImage comunaImage = p5.loadImage("comunas/Comuna-" + (i + 1) + ".png");
 
 			newComuna.setData(id, viviendasTotal, habitadas, deshabitadas, colectivas);
 			newComuna.setImage(comunaImage);
@@ -252,7 +259,7 @@ public class SceneManager {
 
 	private void createCameras() {
 
-		//cameraAltitude = -600;
+		// cameraAltitude = -600;
 		cameras = new ArrayList<Camera>();
 
 		PVector sceneCenter = new PVector();
@@ -331,7 +338,7 @@ public class SceneManager {
 	}
 
 	private void drawComunas() {
-		
+
 		// ACTIVE COMUNA
 		p5.pushMatrix();
 
@@ -341,8 +348,14 @@ public class SceneManager {
 		p5.imageMode(p5.CENTER);
 
 		p5.rotateX(p5.HALF_PI);
+
+		if (activeComuna == 0) {
+			p5.tint(p5.map(comunaTimer.getCurrentTime(), 0, comunaTimer.getTotalTime() * 0.75f, 0, 255));
+		}
+
 		p5.image(comuna0.getImage(), 0, 0);
 		p5.text(comuna0.getId(), 0, -2);
+		p5.tint(255);
 
 		p5.popMatrix();
 
@@ -355,60 +368,62 @@ public class SceneManager {
 		p5.imageMode(p5.CENTER);
 
 		p5.rotateX(p5.HALF_PI);
+		if (activeComuna == 1) {
+			p5.tint(p5.map(comunaTimer.getCurrentTime(), 0, comunaTimer.getTotalTime() * 0.75f, 0, 255));
+		}
 		p5.image(comuna1.getImage(), 0, 0);
 		p5.text(comuna1.getId(), 0, -2);
+		p5.tint(255);
 
 		p5.popMatrix();
 
 	}
-	
-	private void switchComunas(){
-		
+
+	private void switchComunas() {
+
 		// CHANGE NEXT COMUNA
 		if (activeComuna == 0) {
 			comuna1 = comunas.get(p5.floor(p5.random(comunas.size())));
 			camera.moveTo(cameraPos1, 10f);
-			
+
 			particleManager.setAttractorCenter(cameraPos1);
 			particleManager.setSpawnPoints(cameraPos1);
 
 			activeComuna = 1;
-			
+
 		} else {
 			comuna0 = comunas.get(p5.floor(p5.random(comunas.size())));
 			camera.moveTo(cameraPos0, 10f);
-			
+
 			particleManager.setAttractorCenter(cameraPos0);
 			particleManager.setSpawnPoints(cameraPos0);
-
 
 			activeComuna = 0;
 
 		}
-		
+
 		particleManager.enableSpawn(false);
 		arduino.resetManijas();
 		growBuildings();
 		particleManager.killParticles();
-		
+
 		comunaTimer.start();
 
-
 	}
-	
-	private boolean isCameraMoving(){
-		if((camera.getCamPosition().x > (cameraPos1.x - 1)  && activeComuna == 1) || (camera.getCamPosition().x < (cameraPos0.x + 1) && activeComuna == 0)){
+
+	private boolean isCameraMoving() {
+		if ((camera.getCamPosition().x > (cameraPos1.x - 1) && activeComuna == 1) || (camera.getCamPosition().x < (cameraPos0.x + 1) && activeComuna == 0)) {
 			return false;
-		} else { 
+		} else {
 			return true;
 		}
 	}
 
 	public void growBuildings() {
-		
+
 		PVector growPosition;
-		if(activeComuna == 0){
-			growPosition = cameraPos0; 
+		if (activeComuna == 0) {
+			growPosition = cameraPos0;
 		} else {
 			growPosition = cameraPos1;
 		}
@@ -451,7 +466,7 @@ public class SceneManager {
 
 		if (key == 'm') {
 			switchComunas();
-			//camera.moveTo(cameraPos1, 5f);
+			// camera.moveTo(cameraPos1, 5f);
 		}
 		if (key == 'c') {
 			camera.moveTo(cameraPos0, 10f);
