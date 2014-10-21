@@ -20,11 +20,11 @@ public class Particle {
 
 	Attractor attractor;
 
-	public Particle() {
+	public Particle(PVector startPosition) {
 
 		p5 = getP5();
 
-		posicion = new PVector(0, 0, 0);
+		posicion = startPosition;
 		velocidad = new PVector(0, 0);
 		// velocidad = PVector.fromAngle(random(PI) - HALF_PI);
 		// velocidad.mult(10);
@@ -77,6 +77,10 @@ public class Particle {
 	
 	public void setSpawnPosition(PVector startPos){
 		posicion = startPos;
+	}
+	
+	public PVector getPosition(){
+		return posicion;
 	}
 	
 

@@ -32,7 +32,8 @@ public class Building {
 		// fillColor = p5.color(p5.random(255), p5.random(255), p5.random(255));
 		fillColor = p5.color(255);
 
-		buildingHeight = p5.random(camAltitude + 100, 0);
+		buildingHeight = p5.random(0,camAltitude - 100);
+		//p5.println("New height: " + buildingHeight);
 		extrusionPath = new P_LinearPath(new PVector(0, buildingHeight, 0), new PVector(0, 0, 0));
 		contour = createBuildingContour();
 		contourScale = new CS_ConstantScale();

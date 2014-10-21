@@ -29,21 +29,24 @@ public class SceneManager {
 	float cameraAltitude;
 	PVector cameraPos0;
 	PVector cameraPos1;
+	float cameraMotionTime;
 
-	// UserLine line01;
+	UserLine line01;
 
 	// boolean[] activeAreas;
 
 	ParticleManager particleManager;
 
-	// ArduinoManager arduino;
+	ArduinoManager arduino;
+	
+	Timer comunaTimer;
 
 	public SceneManager() {
 		p5 = getP5();
 
 		p5.sphereDetail(4, 2);
 		
-		cameraAltitude = -600;
+		cameraAltitude = 600;
 
 		masterTranslate = new PVector(0, 0, 0);
 
@@ -60,6 +63,7 @@ public class SceneManager {
 		// p5.ortho();
 		cameraPos0 = new PVector(0, cameraAltitude, 0);
 		cameraPos1 = new PVector(1000, cameraAltitude, 0);
+		cameraMotionTime = 10;
 
 
 
@@ -70,8 +74,8 @@ public class SceneManager {
 		buildingManager = new BuildingManager();
 		buildingManager.setGrowingAreaRadius(300);
 
-		// line01 = new UserLine();
-		// line01.initialize(new PVector(0, 0, 0), new PVector(500, 0, 500));
+		line01 = new UserLine();
+		line01.initialize(new PVector(1000,1000,1000), new PVector(1000,1000,1000));
 
 		/*
 		 * activeAreas = new boolean[6]; for (int i = 0; i < activeAreas.length;
@@ -81,7 +85,11 @@ public class SceneManager {
 		particleManager = new ParticleManager();
 		particleManager.setDeathAttractorCenter(camera.getCamPosition());
 
-		// arduino = new ArduinoManager();
+		arduino = new ArduinoManager();
+		
+		comunaTimer = new Timer();
+		comunaTimer.setDuration((int)cameraMotionTime * 2);
+		comunaTimer.start();
 	}
 
 	// KINDA LIKE A STRUCT
@@ -108,6 +116,29 @@ public class SceneManager {
 
 		particleManager.update();
 		
+		
+		// HANDLING PARTICLE SPAWNING
+		if (arduino.manijasAreTouched() && !isCameraMoving()) {
+			particleManager.enableSpawn(true);
+		} else {
+			particleManager.enableSpawn(false);
+			arduino.resetManijas();
+		}
+		particleManager.enableSpawnPoints(arduino.simulateManijaStates());
+
+		/*
+		 * for (int i = 0; i < activeAreas.length; i++) { if
+		 * (arduino.getManijaStates()[i]) { activeAreas[i] = true; } }
+		 */
+		//buildingManager.shrinkBuildings(line01);
+		//buildingManager.shrinkBuildings(particleManager);
+
+		// COMUNA SWITCH TIMER
+		if (comunaTimer.isFinished()) {
+			switchComunas();
+			//comunaTimer.start();
+		}
+		
 		// ENABLING BUILDING DELETION ACCORDING TO CAMERAPOS AND ACTIVE COMUNA (DON'T ERASE PREV BUILDINGS UNTIL YOU'VE ALMOST REACHED ACTIVE COMUNA)
 		if (isCameraMoving()) {
 			buildingManager.enableRemoval(false);
@@ -115,19 +146,12 @@ public class SceneManager {
 			buildingManager.enableRemoval(true);
 		}
 
-		// particleManager.setSpawnAreas(arduino.getManijaStates());
-
-		/*
-		 * for (int i = 0; i < activeAreas.length; i++) { if
-		 * (arduino.getManijaStates()[i]) { activeAreas[i] = true; } }
-		 */
-
 	}
 
 	public void render() {
 
 		// drawCityMap();
-		//drawComunas();
+		drawComunas();
 		drawAxisGizmo();
 		drawCameras();
 
@@ -242,7 +266,7 @@ public class SceneManager {
 
 		// CAM MAIN
 		PVector cam02Pos = new PVector(0, cameraAltitude, 0);
-		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, 1)); // SI
+		PVector mainCamOffset = PVector.sub(cam02Pos, new PVector(0, 0, -1)); // SI
 																				// LA
 																				// UBICO
 																				// JUSTO
@@ -346,6 +370,7 @@ public class SceneManager {
 			camera.moveTo(cameraPos1, 10f);
 			
 			particleManager.setAttractorCenter(cameraPos1);
+			particleManager.setSpawnPoints(cameraPos1);
 
 			activeComuna = 1;
 			
@@ -354,14 +379,20 @@ public class SceneManager {
 			camera.moveTo(cameraPos0, 10f);
 			
 			particleManager.setAttractorCenter(cameraPos0);
+			particleManager.setSpawnPoints(cameraPos0);
+
 
 			activeComuna = 0;
 
 		}
 		
+		particleManager.enableSpawn(false);
+		arduino.resetManijas();
 		growBuildings();
-		
 		particleManager.killParticles();
+		
+		comunaTimer.start();
+
 
 	}
 	

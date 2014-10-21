@@ -5,6 +5,8 @@ import interactionViz.UserLine;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import particlePeople.Particle;
+import particlePeople.ParticleManager;
 import processing.core.PVector;
 import globals.Camera;
 import globals.Main;
@@ -42,7 +44,7 @@ public class BuildingManager {
 
 		buildingGrowCount = 50;
 		//growingAreaRadius = 0;
-		maxDistanceFromPoint = 100;
+		maxDistanceFromPoint = 50;
 		enableRemoval = true;
 
 	}
@@ -133,6 +135,25 @@ public class BuildingManager {
 
 		}
 	}
+	
+	public void shrinkBuildings(ParticleManager particleManager) {
+
+		ArrayList <Particle> particles = particleManager.getParticles();
+		
+		for (Building building : buildings) {
+
+			for (int i = 0; i < particles.size(); i++) {
+				if (buildingReachedByParticle(building, particles.get(i))) {
+					building.setShrinking(true);
+					break;
+				}
+			}
+
+
+		}
+	}
+	
+
 
 	public void setGrowingAreaRadius(float radius) {
 		growingAreaRadius = radius;
@@ -152,6 +173,15 @@ public class BuildingManager {
 				reached = true;
 				break;
 			}
+		}
+		return reached;
+	}
+	
+	private boolean buildingReachedByParticle(Building building, Particle particle){
+		boolean reached = false;
+		float distFromParticle = p5.dist(building.getPosition().x, building.getPosition().y, building.getPosition().z, particle.getPosition().x, particle.getPosition().z, particle.getPosition().y);
+		if (distFromParticle < maxDistanceFromPoint) {
+			reached = true;
 		}
 		return reached;
 	}

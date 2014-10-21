@@ -22,7 +22,7 @@ public class Attractor {
 		position = center.get();
 
 		radius = 10;
-		radiusVel = 0.2f;
+		radiusVel = p5.random(0.05f, 0.2f);
 
 		angle = p5.random(p5.TWO_PI);
 		angleVel = p5.random(-0.1f, 0.1f);
